@@ -42,7 +42,7 @@ Creates connection
 
 =head3 Options are:
 
-=over *
+=over
 
 =item * host
 
@@ -83,6 +83,12 @@ sub new {
 
 	return $self;
 }
+
+=head2 ssh
+
+	Returns current SSH connection
+
+=cut
 
 sub ssh {
 	my $self = shift;
@@ -149,6 +155,7 @@ sub _exec {
 }
 
 # = = = = = = = = = = = =   URFAClient Functions   = = = = = = = = = = = = #
+
 =head2 whoami
 
 	Returns current user info
