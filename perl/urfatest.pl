@@ -18,6 +18,6 @@ my $client = new UTM5::URFAClient({
 
 #print $client->_exec("whoami");
 
-my $r = $client->_exec("whoami");
+my $r = $client->whoami;
 
 print Dumper($r);
