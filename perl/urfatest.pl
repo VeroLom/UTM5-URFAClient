@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use lib 'lib';
+use lib 'UTM5-URFAClient/lib';
 use UTM5::URFAClient;
 
 use Data::Dumper;
@@ -18,6 +18,8 @@ my $client = new UTM5::URFAClient({
 
 #print $client->_exec("whoami");
 
-my $r = $client->whoami;
+#my $r = $client->whoami;
+my $r = $client->_exec('search_users');
+
 
 print Dumper($r);
