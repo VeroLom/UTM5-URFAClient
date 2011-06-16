@@ -9,11 +9,12 @@ use warnings;
 UTM5::URFAClient - Perl wrapper for Netup URFA Client
 
 =head1 VERSION
+
 Version 0.1
 
 =cut
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 =head1 SYNOPSIS
 
@@ -40,7 +41,7 @@ Creates connection
 
 	UTM5::URFAClient->new({<options>})
 
-=head3 Options are:
+        Options are:
 
 =over
 
@@ -267,18 +268,6 @@ L<http://www.netup.ru/>
 =item * RT: CPAN's request tracker
 
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=UTM5-URFAClient>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/UTM5-URFAClient>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/UTM5-URFAClient>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/UTM5-URFAClient/>
 
 =back
 
