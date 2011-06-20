@@ -3,23 +3,18 @@
 use strict;
 use warnings;
 
-use lib 'UTM5-URFAClient/lib';
+use lib 'lib';
 use UTM5::URFAClient;
 
 use Data::Dumper;
 
 my $client = new UTM5::URFAClient({
-	host		=> 'stat.unisnet.ru',
-	login		=> 'root',
-	exec		=> '/netup/utm5/bin/utm5_urfaclient',
+	path		=> '/netup/utm5',
 	user		=> 'nmelikhov',
 	password	=> 'nmelikhov789'
 });
 
-#print $client->_exec("whoami");
+my $uid = $client->whoami->{my_uid};
+my $groups = $client->get_user_groups({ user_id => $uid });
 
-#my $r = $client->whoami;
-my $r = $client->_exec('search_users');
-
-
-print Dumper($r);
+print Dumper($groups);
