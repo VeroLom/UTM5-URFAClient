@@ -14,7 +14,8 @@ my $client = new UTM5::URFAClient({
 	password	=> 'nmelikhov789'
 });
 
-my $uid = $client->whoami->{my_uid};
-my $groups = $client->get_user_groups({ user_id => $uid });
+#my $uid = $client->whoami->{my_uid};
+#my $groups = $client->get_user_groups({ user_id => $uid });
 
-print Dumper($groups);
+my $houses = $client->get_houses_list;
+print Dumper($houses);

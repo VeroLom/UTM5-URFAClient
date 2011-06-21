@@ -11,11 +11,11 @@ UTM5::URFAClient - Perl wrapper for Netup URFA Client
 =head1 VERSION
 
 
-0.3
+Version 0.4
 
 =cut
 
-our $VERSION = '0.3';
+our $VERSION = '0.4';
 
 =head1 SYNOPSIS
 
@@ -45,9 +45,18 @@ Creates connection
 
 =over
 
-=item * path
+=item * host
 
-	Path to the UTM5
+	Remote host with Netup UTM5 with URFAClient module installed
+
+
+=item * login
+
+	Remote SSH user
+
+=item * exec
+
+	Path to the urfaclient binary
 
 =item * user
 
@@ -194,7 +203,7 @@ sub _exec {
 =cut
 
 sub whoami {
-	my $self = shift;
+	my ($self, $params) = @_;
 
 	return $self->_exec('rpcf_whoami');
 }
@@ -207,7 +216,7 @@ sub whoami {
 =cut
 
 sub user_list {
-	my ($self, $param) = @_;
+	my ($self, $params) = @_;
 
 	my $criteria_id = {
 		'LIKE'		=> 1,
@@ -267,9 +276,9 @@ sub user_list {
 
 }
 
-=head2
+=head2 get_user_groups
 
-	Returns use groups array
+	Return users groups array
 
 =cut
 
@@ -280,6 +289,21 @@ sub get_user_groups {
 
 	return $self->_exec('rpcf_get_groups_list', { user_id => $params->{user_id} });
 }
+
+=head2 get_houses_list
+
+	Return houses list
+
+=cut
+
+sub get_houses_list {
+	my ($self, $params) = @_;
+
+	return $self->_exec('rpcf_get_houses_list');
+}
+
+# TODO: rpcf_get_ipzones_list
+
 
 =head1 AUTHOR
 
