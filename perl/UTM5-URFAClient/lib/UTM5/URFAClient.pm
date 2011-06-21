@@ -10,18 +10,17 @@ UTM5::URFAClient - Perl wrapper for Netup URFA Client
 
 =head1 VERSION
 
-Version 0.1
+
+0.3
 
 =cut
 
-our $VERSION = '0.2';
+our $VERSION = '0.3';
 
 =head1 SYNOPSIS
 
 	use UTM5::Client;
 	my $client = new UTM5::URFAClient({
-		host		=> 'netup.example.com',
-		login		=> 'ssh_netup',
 		path		=> '/netup/utm5',
 		user		=> 'remote_user',
 		password	=> 'remote_password'
@@ -46,18 +45,9 @@ Creates connection
 
 =over
 
-=item * host
+=item * path
 
-	Remote host with Netup UTM5 with URFAClient module installed
-
-
-=item * login
-
-	Remote SSH user
-
-=item * exec
-
-	Path to the urfaclient binary
+	Path to the UTM5
 
 =item * user
 
