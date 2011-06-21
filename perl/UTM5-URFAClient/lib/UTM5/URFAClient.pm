@@ -208,6 +208,7 @@ sub whoami {
 	return $self->_exec('rpcf_whoami');
 }
 
+### USERS ###
 
 =head2 user_list
 
@@ -290,6 +291,8 @@ sub get_user_groups {
 	return $self->_exec('rpcf_get_groups_list', { user_id => $params->{user_id} });
 }
 
+### HOUSES ###
+
 =head2 get_houses_list
 
 	Return houses list
@@ -302,7 +305,19 @@ sub get_houses_list {
 	return $self->_exec('rpcf_get_houses_list');
 }
 
-# TODO: rpcf_get_ipzones_list
+### IPZONES ###
+
+=head2 get_ipzones_list
+
+	Return ip-zones list
+
+=cut
+
+sub get_ipzones_list {
+	my ($self, $params) = @_;
+
+	return $self->_exec('rpcf_get_ipzones_list');
+}
 
 
 =head1 AUTHOR
@@ -312,8 +327,8 @@ Nikita Melikhov, C<< <ver at 0xff.su> >>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-utm5-urfaclient at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=UTM5-URFAClient>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=UTM5-URFAClient>.
+I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 
 
