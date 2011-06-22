@@ -305,6 +305,22 @@ sub get_houses_list {
 	return $self->_exec('rpcf_get_houses_list');
 }
 
+
+=head2 get_house
+
+	Return house data
+
+=cut
+
+sub get_house {
+	my ($self, $params) = @_;
+
+	return {} if not int($params->{house_id});
+
+	return $self->_exec('rpcf_get_house', { house_id => $params->{house_id} });
+}
+
+
 ### IPZONES ###
 
 =head2 get_ipzones_list
