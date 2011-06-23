@@ -21,17 +21,17 @@ our $VERSION = '0.4';
 
 	use UTM5::Client;
 	my $client = new UTM5::URFAClient({
-		path		=> '/netup/utm5',
-		user		=> 'remote_user',
-		password	=> 'remote_password'
+		url			=> 'http://example.com/RPC2',
 	});
 	print $client->whoami->{login};
 
 =cut
 
-use Net::SSH::Perl;
+use Frontier::Client;
 use XML::Twig;
-use XML::Writer;
+
+use Carp;
+use Data::Dumper;
 
 =head1 SUBROUTINES/METHODS
 
@@ -41,30 +41,10 @@ Creates connection
 
 	UTM5::URFAClient->new({<options>})
 
-        Options are:
 
-=over
+=item * url
 
-=item * host
-
-	Remote host with Netup UTM5 with URFAClient module installed
-
-
-=item * login
-
-	Remote SSH user
-
-=item * exec
-
-	Path to the urfaclient binary
-
-=item * user
-
-	URFA client user
-
-=item * password
-
-	URFA client password
+	Remote host and port with UTM5::URFAClient::Daemon daemon
 
 =back
 
@@ -75,31 +55,14 @@ sub new {
 
 	bless $self, $class;
 
-	# If no host/login specified use local execution
-	if(!$self->{host} || !$self->{login}) {
-		$self->{_local} = 1;
-	} else {
-		$self->{ssh} = Net::SSH::Perl->new($self->{host}, { debug => 1 });
-		$self->{ssh}->login($self->{login}) || die "ssh: $!";
+	# TODO: Check remote/local
+	if(not $self->{url}) {
+		croak "Daemon URL not specified";
 	}
 
+	$self->{_server} = Frontier::Client->new(url => $self->{url});
+
 	return $self;
-}
-
-=head2 ssh
-
-	Returns current SSH connection
-
-=cut
-
-# Returns SSH connection if exist
-sub ssh {
-	my $self = shift;
-
-	return undef if $self->{_local};
-
-	return $self->{ssh} if $self->{ssh};
-	die "Errors while connecting via SSH";
 }
 
 # XML array parsing callback
@@ -130,8 +93,12 @@ sub _parse_field {
 
 # Parse XML response
 sub _parse {
-	my ($self, $data) = @_;
+	my ($self, $data2, $data) = @_;
 	my $result = {};
+
+	if(not $data =~ /^\<\?xml/) {
+		$data = '<?xml version="1.0" encoding="utf-8"?>' . $data;
+	}
 
 	my $t = XML::Twig->new(twig_handlers => {
 		'integer'		=> sub { _parse_field($result, $_) },
@@ -145,51 +112,14 @@ sub _parse {
 	return $result;
 }
 
-# Creating temporary XML file for UTM5
-sub _create_xml {
-	my ($self, $cmd, $params) = @_;
-
-	$self->{_fname} = 'tmp'.int((time * (rand() * 10000)) / 1000);
-	open FILE, ">$self->{path}/xml/$self->{_fname}.xml";
-
-	my $writer = new XML::Writer(OUTPUT => \*FILE, ENCODING => 'utf-8');
-	$writer->startTag('urfa');
-
-	if(!$params) {
-		$writer->emptyTag('call', function => $cmd);
-	} else {
-		$writer->startTag('call', function => $cmd);
-
-		while(my ($key, $value) = each %$params) {
-		    $writer->emptyTag('parameter', name => $key, value => $value);
-		}
-
-		$writer->endTag('call');
-    }
-
-	$writer->endTag('urfa');
-	$writer->end();
-
-	close FILE;
-	return $self->{_fname};
-}
-
 sub _exec {
 	my ($self, $cmd, $params) = @_;
-	my $param_string ||= '';
 
-	my ($stdout, $stderr, $exit);
+	# TODO: Remote/local request
+	my $call = $self->{_server}->call('query', $cmd, $params);
+	#warn "\nCALL: $call\n\n";
 
-	$cmd = $self->_create_xml($cmd, $params);
-
-	if($self->{_local}) {
-		$stdout = `$self->{path}/bin/utm5_urfaclient -l '$self->{user}' -P '$self->{password}' -a $cmd`;
-		#unlink $self->{_fname};
-	} else {
-		($stdout, $stderr, $exit) = $self->ssh->cmd("$self->{path}/bin/utm5_urfaclient -l '$self->{user}' -P '$self->{password}' -a $cmd $param_string");
-	}
-
-	my $result = _parse($self, $stdout);
+	my $result = $self->_parse($self, $call);
 
 	return $result;
 }
