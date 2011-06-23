@@ -11,11 +11,11 @@ UTM5::URFAClient - Perl wrapper for Netup URFA Client
 =head1 VERSION
 
 
-Version 0.4
+Version 0.5
 
 =cut
 
-our $VERSION = '0.4';
+our $VERSION = '0.5';
 
 =head1 SYNOPSIS
 
