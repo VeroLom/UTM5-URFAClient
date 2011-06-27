@@ -251,6 +251,70 @@ sub get_house {
 }
 
 
+=head2 add_house
+
+	Add new house
+
+=cut
+
+sub add_house {
+	my ($self, $params) = @_;
+
+	return {} if not ($params->{country} &&
+					  $params->{city} &&
+					  $params->{street} &&
+					  $params->{number}
+	);
+
+	return $self->_exec('rpcf_add_house', {
+		house_id		=> 0,
+		connect_date	=> time,
+		post_code		=> ($params->{post_code} ? $params->{post_code} : ''),
+		country			=> $params->{country},
+		region			=> ($params->{region} ? $params->{region} : ''),
+		city			=> $params->{city},
+		street			=> $params->{street},
+		number			=> $params->{number},
+		building		=> ($params->{building} ? $params->{building} : '')
+	});
+}
+
+
+=head2 edit_house
+
+	Edit house
+
+=cut
+
+sub edit_house {
+	my ($self, $params) = @_;
+
+	warn "\n", "-"x78, "\n";
+	warn Dumper($params);
+	warn "\n", "-"x78, "\n";
+
+	return {} if not ($params->{house_id} &&
+					  $params->{country} &&
+					  $params->{city} &&
+					  $params->{street} &&
+					  $params->{number}
+	);
+
+	return $self->_exec('rpcf_add_house', {
+		house_id		=> $params->{house_id},
+		connect_date	=> ($params->{connect_date} ? $params->{connect_date} : time),
+		post_code		=> ($params->{post_code} ? $params->{post_code} : ''),
+		country			=> $params->{country},
+		region			=> ($params->{region} ? $params->{region} : ''),
+		city			=> $params->{city},
+		street			=> $params->{street},
+		number			=> $params->{number},
+		building		=> ($params->{building} ? $params->{building} : '')
+	});
+}
+
+
+
 ### IPZONES ###
 
 =head2 get_ipzones_list
