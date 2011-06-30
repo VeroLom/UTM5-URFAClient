@@ -30,6 +30,10 @@ our $VERSION = '0.5';
 use Frontier::Client;
 use XML::Twig;
 
+use utf8;
+
+use encoding 'utf-8';
+
 use Carp;
 use Data::Dumper;
 
@@ -117,7 +121,7 @@ sub _exec {
 
 	# TODO: Remote/local request
 	my $call = $self->{_server}->call('query', $cmd, $params);
-	#warn "\nCALL: $call\n\n";
+	warn "\nCALL: $call\n\n";
 
 	my $result = $self->_parse($self, $call);
 
@@ -293,12 +297,14 @@ sub edit_house {
 	warn Dumper($params);
 	warn "\n", "-"x78, "\n";
 
-	return {} if not ($params->{house_id} &&
-					  $params->{country} &&
-					  $params->{city} &&
-					  $params->{street} &&
-					  $params->{number}
+	return {} if not (defined($params->{house_id}) &&
+					  defined($params->{country}) &&
+					  defined($params->{city}) &&
+					  defined($params->{street}) &&
+					  defined($params->{number})
 	);
+
+	warn "Updating...\n\n";
 
 	return $self->_exec('rpcf_add_house', {
 		house_id		=> $params->{house_id},
@@ -309,7 +315,7 @@ sub edit_house {
 		city			=> $params->{city},
 		street			=> $params->{street},
 		number			=> $params->{number},
-		building		=> ($params->{building} ? $params->{building} : '')
+		building		=> (defined($params->{building}) ? $params->{building} : '')
 	});
 }
 
