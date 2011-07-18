@@ -1,6 +1,6 @@
 package UTM5::URFAClient;
 
-use v5.10;
+#use v5.10;
 use strict;
 use warnings;
 
@@ -19,7 +19,7 @@ our $VERSION = '0.5';
 
 =head1 SYNOPSIS
 
-	use UTM5::Client;
+	use UTM5::URFAClient;
 	my $client = new UTM5::URFAClient({
 		url			=> 'http://example.com/RPC2',
 	});
@@ -35,7 +35,7 @@ use utf8;
 use encoding 'utf-8';
 
 use Carp;
-use Data::Dumper;
+#use Data::Dumper;
 
 =head1 SUBROUTINES/METHODS
 
@@ -334,6 +334,118 @@ sub get_ipzones_list {
 
 	return $self->_exec('rpcf_get_ipzones_list');
 }
+
+
+
+### Services ###
+#
+# Service types:
+#	1	Once service
+#	2 	Periodic service
+#	3 	IP-traffic
+#	6	Telephony
+#
+# Service status
+#	0	Service
+#	1	Service template
+#	2	Tariff service
+
+=head2 get_services_templates
+
+	Returns services templates
+
+=cut
+
+sub get_services_templates {
+	my ($self, $params) = @_;
+
+	my $services = $self->_exec('rpcf_get_services_list')->{services_count};
+
+	my $result;
+
+	for my $s (@$services) {
+		push @$result, $s if $s->{service_status_array} eq 1;
+	}
+
+	return $result;
+}
+
+
+=head2 get_services_list
+
+	Returns services list
+
+=cut
+
+sub get_services_list {
+	my ($self, $params) = @_;
+
+	return $self->_exec('rpcf_get_services_list')->{services_count};
+}
+
+
+=head2 get_telephony_service
+
+	Returns telephony service info
+
+=cut
+
+sub get_telephony_service {
+	my ($self, $params) = @_;
+
+	return {} if not defined $params->{service_id};
+
+	return $self->_exec('rpcf_get_telephony_service', $params);
+}
+
+
+
+### TARIFFS ###
+
+=head2 get_tariffs_list
+
+	Returns tariffs list
+
+=cut
+
+sub get_tariffs_list {
+	my ($self, $params) = @_;
+
+	return $self->_exec('rpcf_get_tariffs_list')->{tariffs_count};
+}
+
+
+
+### Directions ###
+
+=head2 get_directions_list
+
+	Returns direction list
+
+=cut
+
+sub get_directions_list {
+	my ($self, $params) = @_;
+
+	return $self->_exec('rpcf_get_directions')->{count};
+}
+
+
+=head2 add_direction
+
+	Add new direction
+
+=cut
+
+sub add_direction {
+	my ($self, $params) = @_;
+
+	return {} if not (defined($params->{prefix}) &&
+					  defined($params->{name}));
+
+	return $self->_exec('rpcf_add_direction_new', $params);
+}
+
 
 
 =head1 AUTHOR
