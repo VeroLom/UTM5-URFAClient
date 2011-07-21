@@ -15,7 +15,7 @@ Version 0.5
 
 =cut
 
-our $VERSION = '0.5';
+our $VERSION = '0.51';
 
 =head1 SYNOPSIS
 
@@ -30,14 +30,23 @@ our $VERSION = '0.5';
 use Frontier::Client;
 use XML::Twig;
 
-use utf8;
-
-use encoding 'utf-8';
+#use utf8;
+#use encoding 'utf-8';
 
 use Carp;
 #use Data::Dumper;
 
+our $SERVICE_TYPES = {
+	1	=> 'Once service',
+	2	=> 'Periodic service',
+	3	=> 'IP-traffic service',
+	4	=> 'Hotspot service',
+	5	=> 'Dial-up service',
+	6	=> 'Telephony service'
+};
+
 =head1 SUBROUTINES/METHODS
+
 
 =head2 new
 
@@ -117,13 +126,19 @@ sub _parse {
 }
 
 sub _exec {
-	my ($self, $cmd, $params) = @_;
+	my ($self, $cmd, $params, $data) = @_;
 
 	# TODO: Remote/local request
-	my $call = $self->{_server}->call('query', $cmd, $params);
-	warn "\nCALL: $call\n\n";
+	my $call = $self->{_server}->call('query', $cmd, $params, $data);
+	#warn "\nCALL: $call\n\n";
 
-	my $result = $self->_parse($self, $call);
+	my $result = $call;
+
+	#warn "\n\n".$result."\n\n";
+
+	if($result =~ /\<urfa\>/) {
+		$result = $self->_parse($self, $call);
+	}
 
 	return $result;
 }
@@ -293,18 +308,12 @@ sub add_house {
 sub edit_house {
 	my ($self, $params) = @_;
 
-	warn "\n", "-"x78, "\n";
-	warn Dumper($params);
-	warn "\n", "-"x78, "\n";
-
 	return {} if not (defined($params->{house_id}) &&
 					  defined($params->{country}) &&
 					  defined($params->{city}) &&
 					  defined($params->{street}) &&
 					  defined($params->{number})
 	);
-
-	warn "Updating...\n\n";
 
 	return $self->_exec('rpcf_add_house', {
 		house_id		=> $params->{house_id},
@@ -343,6 +352,8 @@ sub get_ipzones_list {
 #	1	Once service
 #	2 	Periodic service
 #	3 	IP-traffic
+#	4	Hotspot
+#	5	Dialup
 #	6	Telephony
 #
 # Service status
@@ -380,7 +391,7 @@ sub get_services_templates {
 sub get_services_list {
 	my ($self, $params) = @_;
 
-	return $self->_exec('rpcf_get_services_list')->{services_count};
+	return $self->_exec('rpcf_get_services_list', $params)->{services_count};
 }
 
 
@@ -395,9 +406,23 @@ sub get_telephony_service {
 
 	return {} if not defined $params->{service_id};
 
-	return $self->_exec('rpcf_get_telephony_service', $params);
+	return $self->_exec('rpcf_get_telephony_service_ex', $params);
 }
 
+=head2 edit_telephony_service
+
+	Updating telephony service
+
+=cut
+
+sub edit_telephony_service {
+	my ($self, $params, $data) = @_;
+
+	return {} if not (defined $params->{service_id} &&
+					  defined $params->{service_name});
+
+	return $self->_exec('rpcf_edit_telephony_service_ex', $params, $data);
+}
 
 
 ### TARIFFS ###
@@ -413,6 +438,22 @@ sub get_tariffs_list {
 
 	return $self->_exec('rpcf_get_tariffs_list')->{tariffs_count};
 }
+
+
+=head2 get_tariff
+
+	Returns tariff
+
+=cut
+
+sub get_tariff {
+	my ($self, $params) = @_;
+
+	return {} if not $params->{tariff_id};
+
+	return $self->_exec('rpcf_get_tariff', $params);
+}
+
 
 
 
@@ -440,10 +481,27 @@ sub get_directions_list {
 sub add_direction {
 	my ($self, $params) = @_;
 
+	$params->{id} = 0;
+
 	return {} if not (defined($params->{prefix}) &&
 					  defined($params->{name}));
 
-	return $self->_exec('rpcf_add_direction_new', $params);
+	return $self->_exec('rpcf_add_direction_new', $params)->{id};
+}
+
+
+=head2 del_direction
+
+	Delete direction
+
+=cut
+
+sub del_direction {
+	my ($self, $params) = @_;
+
+	return {} if not $params->{direction_id};
+
+	return $self->_exec('rpcf_del_dir', { dir_id => int($params->{direction_id}) });
 }
 
 
