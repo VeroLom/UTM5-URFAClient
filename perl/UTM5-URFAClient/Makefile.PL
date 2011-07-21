@@ -17,7 +17,6 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'Test::More'		=> 0,
-        'Net::SSH::Perl'	=> 0,
         'XML::Twig'		=> 0
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
