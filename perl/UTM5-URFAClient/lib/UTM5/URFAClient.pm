@@ -8,20 +8,22 @@ use warnings;
 
 UTM5::URFAClient - Perl wrapper for Netup URFA Client
 
+Using with L<UTM5::URFAClient::Daemon>
+
 =head1 VERSION
 
 
-Version 0.52
+Version 0.53
 
 =cut
 
-our $VERSION = '0.52';
+our $VERSION = '0.53';
 
 =head1 SYNOPSIS
 
 	use UTM5::URFAClient;
 	my $client = new UTM5::URFAClient({
-		url			=> 'http://example.com/RPC2',
+		url			=> 'http://example.com/',
 	});
 	print $client->whoami->{login};
 
